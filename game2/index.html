@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Dino Run</title>
+<style>
+  body{
+    background:#fff;
+    padding:0;
+    margin:0;
+    overflow:hidden;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+  }
+  canvas{
+    background:#f7f7f7;
+    border:2px solid #444;
+    border-radius:10px;
+  }
+</style>
+</head>
+<body>
+
+<canvas id="game" width="800" height="300"></canvas>
+
+<script>
+const canvas = document.getElementById("game");
+const ctx = canvas.getContext("2d");
+
+let dino = {
+  x: 50, y: 200, width: 40, height: 40, dy:0, jumping:false
+};
+
+let obstacles = [];
+let gravity = 0.6;
+
+function drawDino() {
+  ctx.fillStyle = "#2ecc71";
+  ctx.fillRect(dino.x, dino.y, dino.width, dino.height);
+}
+
+function drawObstacles() {
+  ctx.fillStyle = "#e74c3c";
+  obstacles.forEach(o => {
+    ctx.fillRect(o.x, o.y, o.width, o.height);
+  });
+}
+
+function update() {
+  ctx.clearRect(0,0,800,300);
+
+  // Dino jump
+  if (dino.jumping) {
+    dino.dy += gravity;
+    dino.y += dino.dy;
+
+    if (dino.y >= 200) {
+      dino.y = 200;
+      dino.dy = 0;
+      dino.jumping = false;
+    }
+  }
+
+  // Move obstacles
+  obstacles.forEach(o => o.x -= 5);
+
+  // Remove old obstacles
+  obstacles = obstacles.filter(o => o.x > -50);
+
+  // Add new obstacle
+  if (Math.random() < 0.02) {
+    obstacles.push({ x: 800, y: 230, width: 40, height: 40 });
+  }
+
+  // Collision
+  obstacles.forEach(o => {
+    if (
+      dino.x < o.x + o.width &&
+      dino.x + dino.width > o.x &&
+      dino.y < o.y + o.height
+    ) {
+      alert("Game Over!");
+      obstacles = [];
+    }
+  });
+
+  drawDino();
+  drawObstacles();
+
+  requestAnimationFrame(update);
+}
+
+document.addEventListener("keydown", (e) => {
+  if (e.code === "Space" && !dino.jumping) {
+    dino.jumping = true;
+    dino.dy = -12;
+  }
+});
+
+update();
+</script>
+
+</body>
+</html>

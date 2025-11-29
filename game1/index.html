@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Catch the Box</title>
+<style>
+  body {
+    background: #f0f0f0;
+    overflow: hidden;
+    margin: 0;
+  }
+  #player {
+    width: 80px;
+    height: 80px;
+    background: #3498db;
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-radius: 10px;
+  }
+  #box {
+    width: 50px;
+    height: 50px;
+    background: #e74c3c;
+    position: absolute;
+    top: -50px;
+    left: 50%;
+  }
+</style>
+</head>
+<body>
+<div id="player"></div>
+<div id="box"></div>
+
+<script>
+let player = document.getElementById("player");
+let box = document.getElementById("box");
+
+document.addEventListener("mousemove", (e) => {
+  player.style.left = e.clientX - 40 + "px";
+});
+
+function dropBox() {
+  let x = Math.random() * (window.innerWidth - 50);
+  box.style.left = x + "px";
+  let y = -50;
+
+  let fall = setInterval(() => {
+    y += 5;
+    box.style.top = y + "px";
+
+    let boxRect = box.getBoundingClientRect();
+    let playerRect = player.getBoundingClientRect();
+
+    if (
+      boxRect.bottom >= playerRect.top &&
+      boxRect.left < playerRect.right &&
+      boxRect.right > playerRect.left
+    ) {
+      alert("You caught it!");
+      clearInterval(fall);
+      box.style.top = "-50px";
+      dropBox();
+    }
+
+    if (y > window.innerHeight) {
+      clearInterval(fall);
+      box.style.top = "-50px";
+      dropBox();
+    }
+  }, 20);
+}
+dropBox();
+</script>
+</body>
+</html>
